@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Arch" Version="1.2.7" />
+    <PackageVersion Include="Silk.Net" Version="2.18.0" />
+  </ItemGroup>
+</Project>
