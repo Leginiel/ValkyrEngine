@@ -14,6 +14,7 @@ public class Game : IDisposable
                     .Use<WindowRenderMiddleware>()
                     .Use<VulkanInstanceMiddleware>()
                     .Use<DebugMessengerMiddleware>()
+                    .Use<SurfaceMiddleware>()
                     .Build(options);
   }
   public void Run()
@@ -91,15 +92,12 @@ public class Game : IDisposable
 
 
 
-// //       DestroyWindowSurface();
-
 // //     }
 // //     _disposedValue = true;
 // //   }
 // // }
 // private void InitVulkan()
 // {
-//   CreateSurface();
 //   PickPhysicalDevice();
 //   CreateLogicalDevice();
 //   CreateSwapchain();

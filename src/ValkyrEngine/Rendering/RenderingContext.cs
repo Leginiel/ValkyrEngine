@@ -1,5 +1,6 @@
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
+using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 
 namespace ValkyrEngine.Rendering;
@@ -14,6 +15,8 @@ internal sealed class RenderingContext : IDisposable
   public Instance? Instance { get; set; }
   public DebugUtilsMessengerEXT? DebugMessenger { get; set; }
   public ExtDebugUtils? DebugUtils { get; set; }
+  public SurfaceKHR? Surface { get; set; }
+  public KhrSurface? KhrSurface { get; internal set; }
 
   public void Dispose()
   {
