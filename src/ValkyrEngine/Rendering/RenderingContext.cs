@@ -17,6 +17,7 @@ internal sealed class RenderingContext : IDisposable
   public ExtDebugUtils? DebugUtils { get; set; }
   public SurfaceKHR? Surface { get; set; }
   public KhrSurface? KhrSurface { get; internal set; }
+  public PhysicalDevice? PhysicalDevice { get; internal set; }
 
   public void Dispose()
   {

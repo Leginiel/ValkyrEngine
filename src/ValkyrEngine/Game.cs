@@ -15,6 +15,7 @@ public class Game : IDisposable
                     .Use<VulkanInstanceMiddleware>()
                     .Use<DebugMessengerMiddleware>()
                     .Use<SurfaceMiddleware>()
+                    .Use<PhysicalDeviceMiddleware>()
                     .Build(options);
   }
   public void Run()
@@ -98,7 +99,6 @@ public class Game : IDisposable
 // // }
 // private void InitVulkan()
 // {
-//   PickPhysicalDevice();
 //   CreateLogicalDevice();
 //   CreateSwapchain();
 //   CreateImageViews();
