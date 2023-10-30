@@ -1,4 +1,5 @@
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Windowing;
 
 namespace ValkyrEngine.Rendering;
@@ -11,6 +12,8 @@ internal sealed class RenderingContext : IDisposable
   public IWindow? Window { get; set; }
   public Vk? Vk { get; set; }
   public Instance? Instance { get; set; }
+  public DebugUtilsMessengerEXT? DebugMessenger { get; set; }
+  public ExtDebugUtils? DebugUtils { get; set; }
 
   public void Dispose()
   {

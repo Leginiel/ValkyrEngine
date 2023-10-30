@@ -1,6 +1,5 @@
 ﻿using ValkyrEngine.Rendering;
 using ValkyrEngine.Rendering.Middlewares;
-using ValkyrEngine.Rendering.Steps;
 
 namespace ValkyrEngine;
 
@@ -14,6 +13,7 @@ public class Game : IDisposable
     _context = new GameBuilder()
                     .Use<WindowRenderMiddleware>()
                     .Use<VulkanInstanceMiddleware>()
+                    .Use<DebugMessengerMiddleware>()
                     .Build(options);
   }
   public void Run()
@@ -63,15 +63,8 @@ public class Game : IDisposable
 
 
 
-// private ExtDebugUtils? debugUtils;
-// private DebugUtilsMessengerEXT debugMessenger;
 // private int _currentFrame = 0;
 
-// // public void Init(WindowOptions windowOptions, string applicationName)
-// // {
-// //   InitWindow(windowOptions);
-// //   InitVulkan(applicationName);
-// // }
 // public void Run()
 // {
 //   if (_window is null)
@@ -81,18 +74,6 @@ public class Game : IDisposable
 //   _vk!.DeviceWaitIdle(_device);
 // }
 
-// // public void Dispose()
-// // {
-// //   // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-// //   Dispose(disposing: true);
-// //   GC.SuppressFinalize(this);
-// // }public void Dispose()
-// // {
-// //   // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-// //   Dispose(disposing: true);
-// //   GC.SuppressFinalize(this);
-// // }
-
 // // protected virtual void Dispose(bool disposing)
 // // {
 // //   if (!_disposedValue)
@@ -108,41 +89,7 @@ public class Game : IDisposable
 // //       DestroySwapchain();
 // //       DestroyLogicalDevice();
 
-// //       if (ValidationLayersEnabled)
-// //       {
-// //         debugUtils?.DestroyDebugUtilsMessenger(_instance, debugMessenger, null);
-// //       }
 
-// //       DestroyWindowSurface();
-
-// //       _vk?.DestroyInstance(_instance, null);
-// //       _vk?.Dispose();
-
-// //       _window?.Dispose();
-// //     }
-// //     _disposedValue = true;
-// //   }
-// // }
-
-// // protected virtual void Dispose(bool disposing)
-// // {
-// //   if (!_disposedValue)
-// //   {
-// //     if (disposing)
-// //     {
-// //       DestroySyncObjects();
-// //       DestoryCommandPool();
-// //       DestroyFramebuffers();
-// //       DestroyGraphicsPipeline();
-// //       DestroyRenderPass();
-// //       DestroyImageViews();
-// //       DestroySwapchain();
-// //       DestroyLogicalDevice();
-
-// //       if (ValidationLayersEnabled)
-// //       {
-// //         debugUtils?.DestroyDebugUtilsMessenger(_instance, debugMessenger, null);
-// //       }
 
 // //       DestroyWindowSurface();
 
@@ -152,7 +99,6 @@ public class Game : IDisposable
 // // }
 // private void InitVulkan()
 // {
-//   SetupDebugMessenger();
 //   CreateSurface();
 //   PickPhysicalDevice();
 //   CreateLogicalDevice();
@@ -166,40 +112,7 @@ public class Game : IDisposable
 //   CreateSyncObjects();
 // }
 
-// private void SetupDebugMessenger()
-// {
-//   if (!ValidationLayersEnabled)
-//     return;
 
-//   //TryGetInstanceExtension equivilant to method CreateDebugUtilsMessengerEXT from original tutorial.
-//   if (!_vk!.TryGetInstanceExtension(_instance, out debugUtils))
-//     return;
-
-//   DebugUtilsMessengerCreateInfoEXT createInfo = new();
-//   PopulateDebugMessengerCreateInfo(ref createInfo);
-
-//   if (debugUtils!.CreateDebugUtilsMessenger(_instance, in createInfo, null, out debugMessenger) != Result.Success)
-//   {
-//     throw new Exception("failed to set up debug messenger!");
-//   }
-// }
-// private void PopulateDebugMessengerCreateInfo(ref DebugUtilsMessengerCreateInfoEXT createInfo)
-// {
-//   createInfo.SType = StructureType.DebugUtilsMessengerCreateInfoExt;
-//   createInfo.MessageSeverity = DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt |
-//                                DebugUtilsMessageSeverityFlagsEXT.WarningBitExt |
-//                                DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt;
-//   createInfo.MessageType = DebugUtilsMessageTypeFlagsEXT.GeneralBitExt |
-//                            DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt |
-//                            DebugUtilsMessageTypeFlagsEXT.ValidationBitExt;
-//   createInfo.PfnUserCallback = (DebugUtilsMessengerCallbackFunctionEXT)DebugCallback;
-// }
-// private uint DebugCallback(DebugUtilsMessageSeverityFlagsEXT messageSeverity, DebugUtilsMessageTypeFlagsEXT messageTypes, DebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
-// {
-//   Console.WriteLine($"validation layer:" + Marshal.PtrToStringAnsi((nint)pCallbackData->PMessage));
-
-//   return Vk.False;
-// }
 // private bool CheckValidationLayerSupport()
 // {
 //   uint layerCount = 0;
