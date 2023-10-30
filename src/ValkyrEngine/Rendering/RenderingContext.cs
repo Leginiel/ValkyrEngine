@@ -1,3 +1,4 @@
+using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 
 namespace ValkyrEngine.Rendering;
@@ -8,6 +9,8 @@ internal sealed class RenderingContext : IDisposable
   private readonly Stack<Action<RenderingContext>> _cleanUpJobs = new();
 
   public IWindow? Window { get; set; }
+  public Vk? Vk { get; set; }
+  public Instance? Instance { get; set; }
 
   public void Dispose()
   {

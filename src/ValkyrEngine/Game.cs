@@ -13,6 +13,7 @@ public class Game : IDisposable
   {
     _context = new GameBuilder()
                     .Use<WindowRenderMiddleware>()
+                    .Use<VulkanInstanceMiddleware>()
                     .Build(options);
   }
   public void Run()
@@ -61,17 +62,6 @@ public class Game : IDisposable
 
 
 
-
-
-// private IWindow? _window;
-// private Vk? _vk;
-// private Instance _instance;
-
-// private const bool ValidationLayersEnabled = true;
-// private readonly string[] _validationLayers = new[]
-// {
-//     "VK_LAYER_KHRONOS_validation"
-//   };
 
 // private ExtDebugUtils? debugUtils;
 // private DebugUtilsMessengerEXT debugMessenger;
@@ -156,28 +146,12 @@ public class Game : IDisposable
 
 // //       DestroyWindowSurface();
 
-// //       _vk?.DestroyInstance(_instance, null);
-// //       _vk?.Dispose();
-
-// //       _window?.Dispose();
 // //     }
 // //     _disposedValue = true;
 // //   }
 // // }
-// private void InitWindow(WindowOptions windowOptions)
+// private void InitVulkan()
 // {
-//   _window = Window.Create(windowOptions);
-//   _window.Initialize();
-//   _window!.Render += DrawFrame;
-
-//   if (_window.VkSurface is null)
-//   {
-//     throw new Exception("Windowing platform doesn't support Vulkan.");
-//   }
-// }
-// private void InitVulkan(string applicationName)
-// {
-//   CreateInstance(applicationName);
 //   SetupDebugMessenger();
 //   CreateSurface();
 //   PickPhysicalDevice();
@@ -191,65 +165,6 @@ public class Game : IDisposable
 //   CreateCommandBuffers();
 //   CreateSyncObjects();
 // }
-
-// private void CreateInstance(string applicationName)
-// {
-//   if (_window is null)
-//   {
-//     throw new Exception("No window created!");
-//   }
-
-//   _vk = Vk.GetApi();
-
-//   if (ValidationLayersEnabled && !CheckValidationLayerSupport())
-//   {
-//     throw new Exception("validation layers requested, but not available!");
-//   }
-
-//   ApplicationInfo appInfo = new()
-//   {
-//     SType = StructureType.ApplicationInfo,
-//     PApplicationName = (byte*)Marshal.StringToHGlobalAnsi(applicationName),
-//     ApplicationVersion = new Version32(1, 0, 0),
-//     PEngineName = (byte*)Marshal.StringToHGlobalAnsi("ValkyrEngine"),
-//     EngineVersion = new Version32(1, 0, 0),
-//     ApiVersion = Vk.Version11
-//   };
-
-//   InstanceCreateInfo createInfo = new()
-//   {
-//     SType = StructureType.InstanceCreateInfo,
-//     PApplicationInfo = &appInfo
-//   };
-
-//   var glfwExtensions = GetRequiredExtensions();
-
-//   createInfo.EnabledExtensionCount = (uint)glfwExtensions.Length;
-//   createInfo.PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(glfwExtensions);
-//   createInfo.EnabledLayerCount = 0;
-
-//   if (_vk.CreateInstance(createInfo, null, out _instance) != Result.Success)
-//   {
-//     throw new Exception("failed to create instance!");
-//   }
-
-//   Marshal.FreeHGlobal((IntPtr)appInfo.PApplicationName);
-//   Marshal.FreeHGlobal((IntPtr)appInfo.PEngineName);
-// }
-
-// private string[] GetRequiredExtensions()
-// {
-//   var glfwExtensions = _window!.VkSurface!.GetRequiredExtensions(out var glfwExtensionCount);
-//   var extensions = SilkMarshal.PtrToStringArray((nint)glfwExtensions, (int)glfwExtensionCount);
-//   extensions = extensions.Append("VK_KHR_portability_enumeration").ToArray();
-//   if (ValidationLayersEnabled)
-//   {
-//     return extensions.Append(ExtDebugUtils.ExtensionName).ToArray();
-//   }
-
-//   return extensions;
-// }
-
 
 // private void SetupDebugMessenger()
 // {
