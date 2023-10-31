@@ -3,12 +3,16 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
+using ValkyrEngine.Rendering.Middlewares;
+using Semaphore = Silk.NET.Vulkan.Semaphore;
+
 
 namespace ValkyrEngine.Rendering;
 
 internal unsafe sealed class RenderingContext : IDisposable
 {
-  private bool disposedValue;
+  private int _currentFrame = 0;
+  private bool _disposedValue;
   private readonly Stack<Action<RenderingContext>> _cleanUpJobs = new();
 
   internal static readonly string[] DeviceExtensions =
@@ -44,8 +48,8 @@ internal unsafe sealed class RenderingContext : IDisposable
   public Framebuffer[]? SwapchainFramebuffer { get; internal set; }
   public CommandPool? CommandPool { get; internal set; }
   public CommandBuffer[]? CommandBuffer { get; internal set; }
-  public Silk.NET.Vulkan.Semaphore[]? ImageAvailableSemaphores { get; internal set; }
-  public Silk.NET.Vulkan.Semaphore[]? renderFinishedSemaphores { get; internal set; }
+  public Semaphore[]? ImageAvailableSemaphores { get; internal set; }
+  public Semaphore[]? RenderFinishedSemaphores { get; internal set; }
   public Fence[]? InFlightFences { get; internal set; }
   public Fence[]? ImagesInFlightFences { get; internal set; }
 
@@ -85,6 +89,63 @@ internal unsafe sealed class RenderingContext : IDisposable
     return indices;
   }
 
+  public void DrawFrame(double delta)
+  {
+    Device device = Device.GetValueOrDefault();
+    SwapchainKHR swapchain = Swapchain.GetValueOrDefault();
+    Queue graphicQueue = GraphicQueue.GetValueOrDefault();
+    Queue presentQueue = PresentQueue.GetValueOrDefault();
+    uint imageIndex = 0;
+
+    Vk!.WaitForFences(device, 1, InFlightFences![_currentFrame], true, ulong.MaxValue);
+    KhrSwapchain!.AcquireNextImage(device, swapchain, ulong.MaxValue, ImageAvailableSemaphores![_currentFrame], default, ref imageIndex);
+
+    if (ImagesInFlightFences![imageIndex].Handle != default)
+    {
+      Vk!.WaitForFences(device, 1, ImagesInFlightFences[imageIndex], true, ulong.MaxValue);
+    }
+    ImagesInFlightFences[imageIndex] = ImagesInFlightFences[_currentFrame];
+
+    Semaphore* waitSemaphores = stackalloc[] { ImageAvailableSemaphores[_currentFrame] };
+    PipelineStageFlags* waitStages = stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit };
+    Semaphore* signalSemaphores = stackalloc[] { RenderFinishedSemaphores![_currentFrame] };
+    CommandBuffer buffer = CommandBuffer![imageIndex];
+    SubmitInfo submitInfo = new()
+    {
+      SType = StructureType.SubmitInfo,
+      WaitSemaphoreCount = 1,
+      PWaitSemaphores = waitSemaphores,
+      PWaitDstStageMask = waitStages,
+
+      CommandBufferCount = 1,
+      PCommandBuffers = &buffer,
+      SignalSemaphoreCount = 1,
+      PSignalSemaphores = signalSemaphores,
+    };
+
+    Vk!.ResetFences(device, 1, InFlightFences[_currentFrame]);
+
+    if (Vk!.QueueSubmit(graphicQueue, 1, submitInfo, InFlightFences[_currentFrame]) != Result.Success)
+    {
+      throw new Exception("failed to submit draw command buffer!");
+    }
+
+    SwapchainKHR* swapChains = stackalloc[] { swapchain };
+    PresentInfoKHR presentInfo = new()
+    {
+      SType = StructureType.PresentInfoKhr,
+      WaitSemaphoreCount = 1,
+      PWaitSemaphores = signalSemaphores,
+      SwapchainCount = 1,
+      PSwapchains = swapChains,
+      PImageIndices = &imageIndex
+    };
+
+    KhrSwapchain.QueuePresent(presentQueue, presentInfo);
+
+    _currentFrame = (_currentFrame + 1) % SyncObjectMiddleware.MaxFramesInFlight;
+  }
+
   public void Dispose()
   {
     Dispose(disposing: true);
@@ -96,7 +157,7 @@ internal unsafe sealed class RenderingContext : IDisposable
   }
   private void Dispose(bool disposing)
   {
-    if (!disposedValue)
+    if (!_disposedValue)
     {
       if (disposing)
       {
@@ -105,7 +166,7 @@ internal unsafe sealed class RenderingContext : IDisposable
           job.Invoke(this);
         }
       }
-      disposedValue = true;
+      _disposedValue = true;
     }
   }
 }
