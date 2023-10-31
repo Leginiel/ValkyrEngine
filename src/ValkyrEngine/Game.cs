@@ -17,6 +17,7 @@ public class Game : IDisposable
                     .Use<SurfaceMiddleware>()
                     .Use<PhysicalDeviceMiddleware>()
                     .Use<LogicalDeviceMiddleware>()
+                    .Use<SwapchainMiddleware>()
                     .Build(options);
   }
   public void Run()
