@@ -1,3 +1,4 @@
+using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -5,7 +6,7 @@ using Silk.NET.Windowing;
 
 namespace ValkyrEngine.Rendering;
 
-internal sealed class RenderingContext : IDisposable
+internal unsafe sealed class RenderingContext : IDisposable
 {
   private bool disposedValue;
   private readonly Stack<Action<RenderingContext>> _cleanUpJobs = new();
@@ -28,6 +29,42 @@ internal sealed class RenderingContext : IDisposable
   public SurfaceKHR? Surface { get; set; }
   public KhrSurface? KhrSurface { get; internal set; }
   public PhysicalDevice? PhysicalDevice { get; internal set; }
+
+  public QueueFamilyIndices FindQueueFamilies(PhysicalDevice? physicalDevice = null)
+  {
+    PhysicalDevice device = physicalDevice ?? PhysicalDevice.GetValueOrDefault();
+    KhrSurface khrSurface = KhrSurface!;
+    SurfaceKHR surface = Surface.GetValueOrDefault();
+    QueueFamilyIndices indices = new();
+
+    uint queueFamilityCount = 0;
+    uint i = 0;
+
+    Vk?.GetPhysicalDeviceQueueFamilyProperties(device, ref queueFamilityCount, null);
+    QueueFamilyProperties[] queueFamilies = new QueueFamilyProperties[queueFamilityCount];
+
+    fixed (QueueFamilyProperties* queueFamiliesPtr = queueFamilies)
+    {
+      Vk?.GetPhysicalDeviceQueueFamilyProperties(device, ref queueFamilityCount, queueFamiliesPtr);
+    }
+
+    while (!indices.IsComplete && i < queueFamilies.Length)
+    {
+      QueueFamilyProperties queueFamily = queueFamilies[i];
+
+      khrSurface.GetPhysicalDeviceSurfaceSupport(device, i, surface, out Bool32 presentSupport);
+
+      if (presentSupport)
+        indices.PresentFamily = i;
+
+      if (queueFamily.QueueFlags.HasFlag(QueueFlags.GraphicsBit))
+        indices.GraphicsFamily = i;
+
+      i++;
+    }
+
+    return indices;
+  }
 
   public void Dispose()
   {

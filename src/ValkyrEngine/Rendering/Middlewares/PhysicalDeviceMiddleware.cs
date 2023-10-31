@@ -30,7 +30,7 @@ internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
 
     foreach (var device in devices)
     {
-      if (IsDeviceSuitable(vk, device, khrSurface, surface))
+      if (IsDeviceSuitable(context, vk, device, khrSurface, surface))
       {
         physicalDevice = device;
         break;
@@ -49,13 +49,12 @@ internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
     context.PhysicalDevice = null;
   }
 
-  private static bool IsDeviceSuitable(Vk vk, PhysicalDevice device, KhrSurface khrSurface, SurfaceKHR surface)
+  private static bool IsDeviceSuitable(RenderingContext context, Vk vk, PhysicalDevice device, KhrSurface khrSurface, SurfaceKHR surface)
   {
-    var indices = FindQueueFamilies(vk, device, khrSurface, surface);
-
+    QueueFamilyIndices indices = context.FindQueueFamilies(device);
     bool extensionsSupported = CheckDeviceExtensionsSupport(vk, device);
-
     bool swapChainAdequate = false;
+
     if (extensionsSupported)
     {
       var swapChainSupport = QuerySwapChainSupport(device, khrSurface, surface);
@@ -65,44 +64,6 @@ internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
     return indices.IsComplete && extensionsSupported && swapChainAdequate;
   }
 
-  private static QueueFamilyIndices FindQueueFamilies(Vk vk, PhysicalDevice device, KhrSurface khrSurface, SurfaceKHR surface)
-  {
-    var indices = new QueueFamilyIndices();
-
-    uint queueFamilityCount = 0;
-    vk.GetPhysicalDeviceQueueFamilyProperties(device, ref queueFamilityCount, null);
-
-    var queueFamilies = new QueueFamilyProperties[queueFamilityCount];
-    fixed (QueueFamilyProperties* queueFamiliesPtr = queueFamilies)
-    {
-      vk.GetPhysicalDeviceQueueFamilyProperties(device, ref queueFamilityCount, queueFamiliesPtr);
-    }
-
-    uint i = 0;
-    foreach (var queueFamily in queueFamilies)
-    {
-      if (queueFamily.QueueFlags.HasFlag(QueueFlags.GraphicsBit))
-      {
-        indices.GraphicsFamily = i;
-      }
-
-      khrSurface!.GetPhysicalDeviceSurfaceSupport(device, i, surface, out var presentSupport);
-
-      if (presentSupport)
-      {
-        indices.PresentFamily = i;
-      }
-
-      if (indices.IsComplete)
-      {
-        break;
-      }
-
-      i++;
-    }
-
-    return indices;
-  }
 
   private static bool CheckDeviceExtensionsSupport(Vk vk, PhysicalDevice device)
   {
