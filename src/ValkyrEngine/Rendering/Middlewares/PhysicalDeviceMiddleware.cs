@@ -6,12 +6,6 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
 {
-
-  private static readonly string[] DeviceExtensions =
-  [
-    KhrSwapchain.ExtensionName
-  ];
-
   public void Init(RenderingContext context, ValkyrEngineOptions options)
   {
     Vk vk = context.Vk!;
@@ -123,7 +117,7 @@ internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
 
     var availableExtensionNames = availableExtensions.Select(extension => Marshal.PtrToStringAnsi((IntPtr)extension.ExtensionName)).ToHashSet();
 
-    return DeviceExtensions.All(availableExtensionNames.Contains);
+    return RenderingContext.DeviceExtensions.All(availableExtensionNames.Contains);
   }
 
   private static SwapchainSupportDetails QuerySwapChainSupport(PhysicalDevice device, KhrSurface khrSurface, SurfaceKHR surface)
