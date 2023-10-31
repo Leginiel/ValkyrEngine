@@ -20,6 +20,7 @@ public class Game : IDisposable
                     .Use<SwapchainMiddleware>()
                     .Use<ImageViewsMiddleware>()
                     .Use<RenderPassMiddleware>()
+                    .Use<GraphicPipelineMiddleware>()
                     .Build(options);
   }
   public void Run()
