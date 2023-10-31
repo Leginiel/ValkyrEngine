@@ -29,6 +29,9 @@ internal unsafe sealed class RenderingContext : IDisposable
   public SurfaceKHR? Surface { get; set; }
   public KhrSurface? KhrSurface { get; internal set; }
   public PhysicalDevice? PhysicalDevice { get; internal set; }
+  public Device? Device { get; internal set; }
+  public Queue? GraphicQueue { get; internal set; }
+  public Queue? PresentQueue { get; internal set; }
 
   public QueueFamilyIndices FindQueueFamilies(PhysicalDevice? physicalDevice = null)
   {

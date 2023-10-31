@@ -16,6 +16,7 @@ public class Game : IDisposable
                     .Use<DebugMessengerMiddleware>()
                     .Use<SurfaceMiddleware>()
                     .Use<PhysicalDeviceMiddleware>()
+                    .Use<LogicalDeviceMiddleware>()
                     .Build(options);
   }
   public void Run()
