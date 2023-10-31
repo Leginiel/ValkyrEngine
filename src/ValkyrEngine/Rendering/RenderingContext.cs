@@ -38,6 +38,7 @@ internal unsafe sealed class RenderingContext : IDisposable
   public Format? SwapchainImageFormat { get; internal set; }
   public Extent2D? SwapchainExtent { get; internal set; }
   public Image[]? SwapchainImages { get; internal set; }
+  public ImageView[]? SwapchainImageViews { get; internal set; }
 
   public QueueFamilyIndices FindQueueFamilies(PhysicalDevice? physicalDevice = null)
   {
