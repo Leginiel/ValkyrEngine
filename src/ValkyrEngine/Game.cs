@@ -23,6 +23,7 @@ public class Game : IDisposable
                     .Use<GraphicPipelineMiddleware>()
                     .Use<FramebufferMiddleware>()
                     .Use<CommandPoolMiddleware>()
+                    .Use<CommandBufferMiddleware>()
                     .Build(options);
   }
   public void Run()

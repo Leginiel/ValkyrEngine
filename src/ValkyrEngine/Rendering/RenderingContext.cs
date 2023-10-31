@@ -43,6 +43,7 @@ internal unsafe sealed class RenderingContext : IDisposable
   public Pipeline? GraphicsPipeline { get; internal set; }
   public Framebuffer[]? SwapchainFramebuffer { get; internal set; }
   public CommandPool? CommandPool { get; internal set; }
+  public CommandBuffer[]? CommandBuffer { get; internal set; }
 
   public QueueFamilyIndices FindQueueFamilies(PhysicalDevice? physicalDevice = null)
   {
