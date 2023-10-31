@@ -10,6 +10,11 @@ internal sealed class RenderingContext : IDisposable
   private bool disposedValue;
   private readonly Stack<Action<RenderingContext>> _cleanUpJobs = new();
 
+  internal static readonly string[] ValidationLayers =
+  [
+    "VK_LAYER_KHRONOS_validation"
+  ];
+
   public IWindow? Window { get; set; }
   public Vk? Vk { get; set; }
   public Instance? Instance { get; set; }

@@ -9,11 +9,6 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class VulkanInstanceMiddleware : IRenderMiddleware
 {
-  private readonly static string[] ValidationLayers =
-  [
-    "VK_LAYER_KHRONOS_validation"
-  ];
-
   public void Init(RenderingContext context, ValkyrEngineOptions options)
   {
     Vk vk = Vk.GetApi();
@@ -95,6 +90,6 @@ internal unsafe class VulkanInstanceMiddleware : IRenderMiddleware
 
     var availableLayerNames = availableLayers.Select(layer => Marshal.PtrToStringAnsi((IntPtr)layer.LayerName)).ToHashSet();
 
-    return ValidationLayers.All(availableLayerNames.Contains);
+    return RenderingContext.ValidationLayers.All(availableLayerNames.Contains);
   }
 }
