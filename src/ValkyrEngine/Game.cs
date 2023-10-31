@@ -19,6 +19,7 @@ public class Game : IDisposable
                     .Use<LogicalDeviceMiddleware>()
                     .Use<SwapchainMiddleware>()
                     .Use<ImageViewsMiddleware>()
+                    .Use<RenderPassMiddleware>()
                     .Build(options);
   }
   public void Run()
