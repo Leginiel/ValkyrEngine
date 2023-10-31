@@ -21,7 +21,6 @@ internal unsafe sealed class RenderingContext : IDisposable
     "VK_LAYER_KHRONOS_validation"
   ];
 
-
   public IWindow? Window { get; set; }
   public Vk? Vk { get; set; }
   public Instance? Instance { get; set; }
@@ -42,6 +41,7 @@ internal unsafe sealed class RenderingContext : IDisposable
   public RenderPass? RenderPass { get; internal set; }
   public PipelineLayout? PipelineLayout { get; internal set; }
   public Pipeline? GraphicsPipeline { get; internal set; }
+  public Framebuffer[]? SwapchainFramebuffer { get; internal set; }
 
   public QueueFamilyIndices FindQueueFamilies(PhysicalDevice? physicalDevice = null)
   {

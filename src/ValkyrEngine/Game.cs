@@ -21,6 +21,7 @@ public class Game : IDisposable
                     .Use<ImageViewsMiddleware>()
                     .Use<RenderPassMiddleware>()
                     .Use<GraphicPipelineMiddleware>()
+                    .Use<FramebufferMiddleware>()
                     .Build(options);
   }
   public void Run()
