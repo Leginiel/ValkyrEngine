@@ -24,6 +24,7 @@ public class Game : IDisposable
                     .Use<FramebufferMiddleware>()
                     .Use<CommandPoolMiddleware>()
                     .Use<CommandBufferMiddleware>()
+                    .Use<SyncObjectMiddleware>()
                     .Build(options);
   }
   public void Run()

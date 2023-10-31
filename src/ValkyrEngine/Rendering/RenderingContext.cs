@@ -44,6 +44,10 @@ internal unsafe sealed class RenderingContext : IDisposable
   public Framebuffer[]? SwapchainFramebuffer { get; internal set; }
   public CommandPool? CommandPool { get; internal set; }
   public CommandBuffer[]? CommandBuffer { get; internal set; }
+  public Silk.NET.Vulkan.Semaphore[]? ImageAvailableSemaphores { get; internal set; }
+  public Silk.NET.Vulkan.Semaphore[]? renderFinishedSemaphores { get; internal set; }
+  public Fence[]? InFlightFences { get; internal set; }
+  public Fence[]? ImagesInFlightFences { get; internal set; }
 
   public QueueFamilyIndices FindQueueFamilies(PhysicalDevice? physicalDevice = null)
   {
