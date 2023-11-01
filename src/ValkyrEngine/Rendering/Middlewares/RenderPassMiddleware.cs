@@ -4,7 +4,9 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class RenderPassMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static bool Recreatable { get; } = true;
+
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();
@@ -58,7 +60,7 @@ internal unsafe class RenderPassMiddleware : IRenderMiddleware
     context.RenderPass = renderPass;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     context.Vk!.DestroyRenderPass(context.Device.GetValueOrDefault(), context.RenderPass.GetValueOrDefault(), null);
   }

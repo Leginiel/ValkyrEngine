@@ -5,9 +5,12 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class GraphicPipelineMiddleware : IRenderMiddleware
 {
-  public unsafe void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static bool Recreatable { get; } = true;
+
+  public unsafe static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
+    ValkyrEngineOptions options = context.Options;
     Device device = context.Device.GetValueOrDefault();
     RenderPass renderPass = context.RenderPass.GetValueOrDefault();
     Extent2D swapchainExtent = context.SwapchainExtent.GetValueOrDefault();
@@ -144,7 +147,7 @@ internal unsafe class GraphicPipelineMiddleware : IRenderMiddleware
     context.GraphicsPipeline = graphicsPipeline;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();

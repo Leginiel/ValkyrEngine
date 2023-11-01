@@ -7,7 +7,7 @@ internal unsafe class SyncObjectMiddleware : IRenderMiddleware
 {
   public const int MaxFramesInFlight = 2;
 
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();
@@ -44,7 +44,7 @@ internal unsafe class SyncObjectMiddleware : IRenderMiddleware
     context.ImagesInFlightFences = imagesInFlight;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();

@@ -4,14 +4,9 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal class WindowRenderMiddleware : IRenderMiddleware
 {
-  public void CleanUp(RenderingContext context)
+  public static void Init(RenderingContext context)
   {
-    context.Window?.Dispose();
-    context.Window = null;
-  }
-
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
-  {
+    ValkyrEngineOptions options = context.Options;
     IWindow window = Window.Create(options.WindowOptions);
 
     window.Initialize();
@@ -21,5 +16,11 @@ internal class WindowRenderMiddleware : IRenderMiddleware
       throw new Exception("Windowing platform doesn't support Vulkan.");
     }
     context.Window = window;
+  }
+
+  public static void CleanUp(RenderingContext context)
+  {
+    context.Window?.Dispose();
+    context.Window = null;
   }
 }

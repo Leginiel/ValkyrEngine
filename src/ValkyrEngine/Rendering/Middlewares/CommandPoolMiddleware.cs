@@ -4,7 +4,7 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class CommandPoolMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();
@@ -22,7 +22,7 @@ internal unsafe class CommandPoolMiddleware : IRenderMiddleware
     context.CommandPool = commandPool;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();

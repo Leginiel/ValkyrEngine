@@ -9,9 +9,10 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class VulkanInstanceMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
     Vk vk = Vk.GetApi();
+    ValkyrEngineOptions options = context.Options;
     bool activateValidationLayers = options.ActivateValidationLayers;
 
     if (activateValidationLayers && !CheckValidationLayerSupport(vk))
@@ -51,7 +52,7 @@ internal unsafe class VulkanInstanceMiddleware : IRenderMiddleware
     context.Vk = vk;
     context.Instance = instance;
   }
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     Vk? vk = context.Vk;
     if (context.Instance is not null)

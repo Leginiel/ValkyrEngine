@@ -1,19 +1,22 @@
 using Silk.NET.Core;
+using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 using ValkyrEngine.Rendering.Middlewares;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
-
+using ReusableMiddlewareAction = (bool, System.Action<ValkyrEngine.Rendering.RenderingContext>);
 
 namespace ValkyrEngine.Rendering;
 
-internal unsafe sealed class RenderingContext : IDisposable
+internal unsafe sealed class RenderingContext(ValkyrEngineOptions options) : IDisposable
 {
   private int _currentFrame = 0;
   private bool _disposedValue;
-  private readonly Stack<Action<RenderingContext>> _cleanUpJobs = new();
+  private bool _frameBufferResized;
+  private readonly Queue<ReusableMiddlewareAction> _initJobs = [];
+  private readonly Stack<ReusableMiddlewareAction> _cleanUpJobs = [];
 
   internal static readonly string[] DeviceExtensions =
   [
@@ -25,6 +28,7 @@ internal unsafe sealed class RenderingContext : IDisposable
     "VK_LAYER_KHRONOS_validation"
   ];
 
+  public ValkyrEngineOptions Options => options;
   public IWindow? Window { get; set; }
   public Vk? Vk { get; set; }
   public Instance? Instance { get; set; }
@@ -88,7 +92,19 @@ internal unsafe sealed class RenderingContext : IDisposable
 
     return indices;
   }
+  public RenderingContext Add<T>()
+    where T : IRenderMiddleware
+  {
+    _initJobs.Enqueue((T.Recreatable, T.Init));
+    _cleanUpJobs.Push((T.Recreatable, T.CleanUp));
 
+    T.Init(this);
+    return this;
+  }
+  public void Resize(Vector2D<int> _)
+  {
+    _frameBufferResized = true;
+  }
   public void DrawFrame(double delta)
   {
     Device device = Device.GetValueOrDefault();
@@ -98,7 +114,17 @@ internal unsafe sealed class RenderingContext : IDisposable
     uint imageIndex = 0;
 
     Vk!.WaitForFences(device, 1, InFlightFences![_currentFrame], true, ulong.MaxValue);
-    KhrSwapchain!.AcquireNextImage(device, swapchain, ulong.MaxValue, ImageAvailableSemaphores![_currentFrame], default, ref imageIndex);
+    Result result = KhrSwapchain!.AcquireNextImage(device, swapchain, ulong.MaxValue, ImageAvailableSemaphores![_currentFrame], default, ref imageIndex);
+
+    if (result == Result.ErrorOutOfDateKhr)
+    {
+      RecreateSwapchain();
+      return;
+    }
+    else if (result != Result.Success && result != Result.SuboptimalKhr)
+    {
+      throw new Exception("failed to acquire swap chain image!");
+    }
 
     if (ImagesInFlightFences![imageIndex].Handle != default)
     {
@@ -141,7 +167,17 @@ internal unsafe sealed class RenderingContext : IDisposable
       PImageIndices = &imageIndex
     };
 
-    KhrSwapchain.QueuePresent(presentQueue, presentInfo);
+    result = KhrSwapchain.QueuePresent(presentQueue, presentInfo);
+
+    if (result == Result.ErrorOutOfDateKhr || result == Result.SuboptimalKhr || _frameBufferResized)
+    {
+      _frameBufferResized = false;
+      RecreateSwapchain();
+    }
+    else if (result != Result.Success)
+    {
+      throw new Exception("failed to present swap chain image!");
+    }
 
     _currentFrame = (_currentFrame + 1) % SyncObjectMiddleware.MaxFramesInFlight;
   }
@@ -151,22 +187,49 @@ internal unsafe sealed class RenderingContext : IDisposable
     Dispose(disposing: true);
     GC.SuppressFinalize(this);
   }
-  public void AddCleanUpJob(Action<RenderingContext> job)
-  {
-    _cleanUpJobs.Push(job);
-  }
   private void Dispose(bool disposing)
   {
     if (!_disposedValue)
     {
       if (disposing)
       {
-        while (_cleanUpJobs.TryPop(out Action<RenderingContext>? job))
+        while (_cleanUpJobs.TryPop(out ReusableMiddlewareAction job))
         {
-          job.Invoke(this);
+          Action<RenderingContext> action = job!.Item2;
+          action.Invoke(this);
         }
       }
       _disposedValue = true;
+    }
+  }
+
+  private void RecreateSwapchain()
+  {
+    Vector2D<int> framebufferSize = Window!.FramebufferSize;
+
+    while (framebufferSize.X == 0 || framebufferSize.Y == 0)
+    {
+      framebufferSize = Window.FramebufferSize;
+      Window.DoEvents();
+    }
+
+    Vk!.DeviceWaitIdle(Device.GetValueOrDefault());
+
+    CleanupSwapchain();
+
+    foreach (ReusableMiddlewareAction action in _initJobs)
+    {
+      if (action.Item1)
+        action.Item2.Invoke(this);
+    }
+    ImagesInFlightFences = new Fence[SwapchainImages!.Length];
+  }
+  private void CleanupSwapchain()
+  {
+    foreach (ReusableMiddlewareAction action in _cleanUpJobs)
+    {
+      if (action.Item1)
+        action.Item2.Invoke(this);
     }
   }
 }

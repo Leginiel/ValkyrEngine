@@ -5,7 +5,7 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class SurfaceMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
     Instance instance = context.Instance.GetValueOrDefault();
 
@@ -18,7 +18,7 @@ internal unsafe class SurfaceMiddleware : IRenderMiddleware
     context.KhrSurface = khrSurface;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     context.KhrSurface!.DestroySurface(context.Instance.GetValueOrDefault(), context.Surface.GetValueOrDefault(), null);
   }

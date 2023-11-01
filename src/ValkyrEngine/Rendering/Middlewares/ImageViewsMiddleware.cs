@@ -4,7 +4,9 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class ImageViewsMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static bool Recreatable { get; } = true;
+
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Image[] swapchainImages = context.SwapchainImages!;
@@ -47,7 +49,7 @@ internal unsafe class ImageViewsMiddleware : IRenderMiddleware
     context.SwapchainImageViews = swapchainImageViews;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     if (context.SwapchainImageViews is null)
       return;

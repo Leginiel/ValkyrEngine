@@ -4,7 +4,9 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class FramebufferMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static bool Recreatable { get; } = true;
+
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();
@@ -37,7 +39,7 @@ internal unsafe class FramebufferMiddleware : IRenderMiddleware
     context.SwapchainFramebuffer = swapchainFramebuffer;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Device device = context.Device.GetValueOrDefault();

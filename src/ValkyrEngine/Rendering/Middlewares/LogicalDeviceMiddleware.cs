@@ -6,9 +6,10 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class LogicalDeviceMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
+    ValkyrEngineOptions options = context.Options;
     PhysicalDevice physicalDevice = context.PhysicalDevice.GetValueOrDefault();
     PhysicalDeviceFeatures deviceFeatures = new();
     QueueFamilyIndices indices = context.FindQueueFamilies();
@@ -72,7 +73,7 @@ internal unsafe class LogicalDeviceMiddleware : IRenderMiddleware
     context.PresentQueue = presentQueue;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     context.Vk?.DestroyDevice(context.Device.GetValueOrDefault(), null);
   }

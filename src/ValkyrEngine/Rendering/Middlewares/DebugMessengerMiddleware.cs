@@ -6,8 +6,10 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class DebugMessengerMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
+    ValkyrEngineOptions options = context.Options;
+
     if (!options.ActivateValidationLayers)
       return;
 
@@ -29,7 +31,7 @@ internal unsafe class DebugMessengerMiddleware : IRenderMiddleware
     context.DebugUtils = debugUtils;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     if (context.DebugMessenger is not null)
       context.DebugUtils?.DestroyDebugUtilsMessenger(context.Instance.GetValueOrDefault(), context.DebugMessenger.Value, null);

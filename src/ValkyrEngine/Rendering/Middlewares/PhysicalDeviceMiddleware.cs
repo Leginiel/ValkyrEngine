@@ -6,7 +6,7 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static void Init(RenderingContext context)
   {
     Vk vk = context.Vk!;
     Instance instance = context.Instance.GetValueOrDefault();
@@ -44,7 +44,7 @@ internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
     context.PhysicalDevice = physicalDevice;
   }
 
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     context.PhysicalDevice = null;
   }
@@ -63,7 +63,6 @@ internal unsafe class PhysicalDeviceMiddleware : IRenderMiddleware
 
     return indices.IsComplete && extensionsSupported && swapChainAdequate;
   }
-
 
   private static bool CheckDeviceExtensionsSupport(Vk vk, PhysicalDevice device)
   {

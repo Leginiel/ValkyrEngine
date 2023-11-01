@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -8,7 +7,9 @@ namespace ValkyrEngine.Rendering.Middlewares;
 
 internal unsafe class SwapchainMiddleware : IRenderMiddleware
 {
-  public void Init(RenderingContext context, ValkyrEngineOptions options)
+  public static bool Recreatable { get; } = true;
+
+  public static void Init(RenderingContext context)
   {
     PhysicalDevice physicalDevice = context.PhysicalDevice.GetValueOrDefault();
     KhrSurface khrSurface = context.KhrSurface!;
@@ -74,7 +75,7 @@ internal unsafe class SwapchainMiddleware : IRenderMiddleware
     context.SwapchainExtent = extent;
     context.SwapchainImages = swapchainImages;
   }
-  public void CleanUp(RenderingContext context)
+  public static void CleanUp(RenderingContext context)
   {
     context.KhrSwapchain?.DestroySwapchain(context.Device.GetValueOrDefault(), context.Swapchain.GetValueOrDefault(), null);
     context.KhrSwapchain = null;

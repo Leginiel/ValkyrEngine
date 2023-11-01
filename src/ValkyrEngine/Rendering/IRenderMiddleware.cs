@@ -2,6 +2,7 @@ namespace ValkyrEngine.Rendering;
 
 internal interface IRenderMiddleware
 {
-  void Init(RenderingContext context, ValkyrEngineOptions options);
-  void CleanUp(RenderingContext context);
+  static virtual bool Recreatable { get; } = false;
+  static abstract void Init(RenderingContext context);
+  static abstract void CleanUp(RenderingContext context);
 }
