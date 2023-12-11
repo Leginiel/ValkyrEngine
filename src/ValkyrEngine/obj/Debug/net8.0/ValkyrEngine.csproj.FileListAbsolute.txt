@@ -1,0 +1,13 @@
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.csproj.AssemblyReference.cache
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.GeneratedMSBuildEditorConfig.editorconfig
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.AssemblyInfoInputs.cache
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.AssemblyInfo.cs
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.csproj.CoreCompileInputs.cache
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.sourcelink.json
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/bin/Debug/net8.0/ValkyrEngine.deps.json
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/bin/Debug/net8.0/ValkyrEngine.dll
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/bin/Debug/net8.0/ValkyrEngine.pdb
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.dll
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/refint/ValkyrEngine.dll
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ValkyrEngine.pdb
+/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/Debug/net8.0/ref/ValkyrEngine.dll

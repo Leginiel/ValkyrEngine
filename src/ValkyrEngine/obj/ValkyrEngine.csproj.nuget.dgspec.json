@@ -1,0 +1,90 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/ValkyrEngine.csproj": {}
+  },
+  "projects": {
+    "/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/ValkyrEngine.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/ValkyrEngine.csproj",
+        "projectName": "ValkyrEngine",
+        "projectPath": "/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/ValkyrEngine.csproj",
+        "packagesPath": "/home/leginiel/.nuget/packages/",
+        "outputPath": "/home/leginiel/repos/ValkyrEngine/src/ValkyrEngine/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "configFilePaths": [
+          "/home/leginiel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Arch": {
+              "target": "Package",
+              "version": "[1.2.7, )",
+              "versionCentrallyManaged": true
+            },
+            "Silk.NET.Vulkan.Extensions.EXT": {
+              "target": "Package",
+              "version": "[2.18.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Silk.Net": {
+              "target": "Package",
+              "version": "[2.18.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Throw": {
+              "target": "Package",
+              "version": "[1.4.0, )",
+              "versionCentrallyManaged": true
+            }
+          },
+          "centralPackageVersions": {
+            "Arch": "[1.2.7, )",
+            "Silk.Net": "[2.18.0, )",
+            "Silk.NET.Vulkan.Extensions.EXT": "[2.18.0, )",
+            "Throw": "[1.4.0, )"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/leginiel/.dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

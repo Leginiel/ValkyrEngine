@@ -1,0 +1,151 @@
+static inline uint32_t image_num_miplevels(const VkExtent3D &extent)
+{
+	uint32_t size = std::max<uint32_t>(std::max<uint32_t>(extent.width, extent.height), extent.depth);
+	return Util::floor_log2(size) + 1;
+}
+
+static inline VkFormatFeatureFlags image_usage_to_features(VkImageUsageFlags usage)
+{
+	VkFormatFeatureFlags flags = 0;
+	if (usage & VK_IMAGE_USAGE_SAMPLED_BIT)
+		flags |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+	if (usage & VK_IMAGE_USAGE_STORAGE_BIT)
+		flags |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+	if (usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+		flags |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+	if (usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+		flags |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+	return flags;
+}
+
+struct ImageInitialData
+{
+	const void *data;
+	unsigned row_length;
+	unsigned image_height;
+};
+
+enum ImageMiscFlagBits
+{
+	IMAGE_MISC_GENERATE_MIPS_BIT = 1 << 0,
+	IMAGE_MISC_FORCE_ARRAY_BIT = 1 << 1,
+	IMAGE_MISC_MUTABLE_SRGB_BIT = 1 << 2,
+	IMAGE_MISC_CONCURRENT_QUEUE_GRAPHICS_BIT = 1 << 3,
+	IMAGE_MISC_CONCURRENT_QUEUE_ASYNC_COMPUTE_BIT = 1 << 4,
+	IMAGE_MISC_CONCURRENT_QUEUE_ASYNC_GRAPHICS_BIT = 1 << 5,
+	IMAGE_MISC_CONCURRENT_QUEUE_ASYNC_TRANSFER_BIT = 1 << 6,
+	IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_DECODE_BIT = 1 << 7,
+	IMAGE_MISC_VERIFY_FORMAT_FEATURE_SAMPLED_LINEAR_FILTER_BIT = 1 << 8,
+	IMAGE_MISC_LINEAR_IMAGE_IGNORE_DEVICE_LOCAL_BIT = 1 << 9,
+	IMAGE_MISC_FORCE_NO_DEDICATED_BIT = 1 << 10,
+	IMAGE_MISC_NO_DEFAULT_VIEWS_BIT = 1 << 11,
+	IMAGE_MISC_EXTERNAL_MEMORY_BIT = 1 << 12,
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+	IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_ENCODE_BIT = 1 << 13,
+	IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_DUPLEX =
+			IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_DECODE_BIT |
+			IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_ENCODE_BIT,
+#else
+	IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_DUPLEX =
+			IMAGE_MISC_CONCURRENT_QUEUE_VIDEO_DECODE_BIT,
+#endif
+};
+using ImageMiscFlags = uint32_t;
+
+enum ImageViewMiscFlagBits
+{
+	IMAGE_VIEW_MISC_FORCE_ARRAY_BIT = 1 << 0
+};
+using ImageViewMiscFlags = uint32_t;
+
+class Image;
+class ImmutableYcbcrConversion;
+
+enum class ImageDomain
+{
+	Physical,
+	Transient,
+	LinearHostCached,
+	LinearHost
+};
+
+class Image;
+
+class Image : public Util::IntrusivePtrEnabled<Image, ImageDeleter, HandleCounter>,
+							public Cookie,
+							public InternalSyncEnabled
+{
+public:
+	friend struct ImageDeleter;
+
+	const DeviceAllocation &get_allocation() const
+	{
+		return alloc;
+	}
+
+	void disown_image();
+	void disown_memory_allocation();
+	DeviceAllocation take_allocation_ownership();
+
+	ExternalHandle export_handle();
+
+	using ImageHandle = Util::IntrusivePtr<Image>;
+
+	class LinearHostImage;
+	struct LinearHostImageDeleter
+	{
+		void operator()(LinearHostImage *image);
+	};
+
+	class Buffer;
+
+	enum LinearHostImageCreateInfoFlagBits
+	{
+		LINEAR_HOST_IMAGE_HOST_CACHED_BIT = 1 << 0,
+		LINEAR_HOST_IMAGE_REQUIRE_LINEAR_FILTER_BIT = 1 << 1,
+		LINEAR_HOST_IMAGE_IGNORE_DEVICE_LOCAL_BIT = 1 << 2
+	};
+	using LinearHostImageCreateInfoFlags = uint32_t;
+
+	struct LinearHostImageCreateInfo
+	{
+		unsigned width = 0;
+		unsigned height = 0;
+		VkFormat format = VK_FORMAT_UNDEFINED;
+		VkImageUsageFlags usage = 0;
+		VkPipelineStageFlags2 stages = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+		LinearHostImageCreateInfoFlags flags = 0;
+	};
+
+	// Special image type which supports direct CPU mapping.
+	// Useful optimization for UMA implementations of Vulkan where we don't necessarily need
+	// to perform staging copies. It gracefully falls back to staging buffer as needed.
+	// Only usage flag SAMPLED_BIT is currently supported.
+	class LinearHostImage : public Util::IntrusivePtrEnabled<LinearHostImage, LinearHostImageDeleter, HandleCounter>
+	{
+	public:
+		friend struct LinearHostImageDeleter;
+
+		size_t get_row_pitch_bytes() const;
+		size_t get_offset() const;
+		const ImageView &get_view() const;
+		const Image &get_image() const;
+		const DeviceAllocation &get_host_visible_allocation() const;
+		const Buffer &get_host_visible_buffer() const;
+		bool need_staging_copy() const;
+		VkPipelineStageFlags2 get_used_pipeline_stages() const;
+
+	private:
+		friend class Util::ObjectPool<LinearHostImage>;
+		LinearHostImage(Device *device, ImageHandle gpu_image, Util::IntrusivePtr<Buffer> cpu_image,
+										VkPipelineStageFlags2 stages);
+		Device *device;
+		ImageHandle gpu_image;
+		Util::IntrusivePtr<Buffer> cpu_image;
+		VkPipelineStageFlags2 stages;
+		size_t row_pitch;
+		size_t row_offset;
+	};
+	using LinearHostImageHandle = Util::IntrusivePtr<LinearHostImage>;
+}
